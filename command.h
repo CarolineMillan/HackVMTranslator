@@ -12,6 +12,18 @@ struct Command {
     // set default to a label
     KIND kind = KIND::C_LABEL;
 
+    // create an enum to use for the segment type
+    enum class SEGMENT {CONSTANT, LCL, ARG, THIS, THAT, STATIC, TEMP, PTR};
+    
+    // set default to a constant
+    SEGMENT segment = SEGMENT::CONSTANT;
+
+    // create an enum to use for the segment type
+    enum class ARITH_OP {ADD};
+    
+    // set default to a constant
+    ARITH_OP arith_op = ARITH_OP::ADD;
+
     // store arg1 if it exists
     std::string arg1 = "";
 

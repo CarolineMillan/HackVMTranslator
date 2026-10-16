@@ -36,6 +36,9 @@ public:
 
     // returns second arg if it exists
     int arg2();
+    //
+    // store the current line, default to empty string
+    std::string current = "";
 
     // store the parsed input as tokens, unless you don't store the whole thing and just parse one line at a time
     //std::vector<Command> commands;
@@ -43,8 +46,6 @@ public:
     // have a function here to parse the whole input, or do we parse one line at a time and send it to the code writer in the same loop in main? This means only looping through it once rather than twice which is probably faster
 private:
 
-    // store the current line, default to empty string
-    std::string current = "";
 
     std::ifstream inFile;
 

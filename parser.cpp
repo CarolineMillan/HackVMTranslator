@@ -17,13 +17,7 @@ Parser::Parser(std::string input) {
 bool Parser::hasMoreLines() {
     // checks to see if there is another line
     //
-    // TODO: convince yourself that this doesn't advance a word
-    std::string line;
-    if (inFile >> line) {
-        return true;
-    } else {
-        return false;
-    }
+    return inFile.peek() != EOF;
 }
 
 void Parser::advance() {
@@ -36,6 +30,7 @@ void Parser::advance() {
 Command Parser::parseLine() {
     // turn current into a command
     //
+    // TODO: remove comments and whitespace from input text
     Command cmd;
 
     // TODO: split this up into helper functions
@@ -44,10 +39,11 @@ Command Parser::parseLine() {
     std::string cmdType = "";
     int i = 0;
 
-    while (current[i] != ' ') {
+    while (i < current.size() && current[i] != ' ') {
         cmdType += current[i];
         i++;
     }
+std::cerr << "word: [" << cmdType << "]\n";
 
     // now match on the cmd
     // can't use a switch statement because this is a string not an integer/enumerated value
@@ -57,6 +53,7 @@ Command Parser::parseLine() {
         cmd.kind = Command::KIND::C_POP;
     } else if (cmdType == "add") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
+        cmd.arith_op = Command::ARITH_OP::ADD;
     } else if (cmdType == "sub") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
     } else if (cmdType == "neg") {
@@ -92,14 +89,31 @@ Command Parser::parseLine() {
     
     
     if (cmd.kind != Command::KIND::C_ARITHMETIC) {
-        std::string arg1 = "";
+        std::string segment = "";
         i++;
 
-        while (current[i] != ' ') {
-            arg1 += current[i];
+        while (i < current.size() && current[i] != ' ') {
+            segment += current[i];
             i++;
         }
-        cmd.arg1 = arg1;
+
+        if (segment == "constant") {
+            cmd.segment = Command::SEGMENT::CONSTANT;
+        } else if (segment == "local") {
+            cmd.segment = Command::SEGMENT::LCL;
+        } else if (segment == "argument") {
+            cmd.segment = Command::SEGMENT::ARG;
+        } else if (segment == "this") {
+            cmd.segment = Command::SEGMENT::THIS;
+        } else if (segment == "that") {
+            cmd.segment = Command::SEGMENT::THAT;
+        } else if (segment == "static") {
+            cmd.segment = Command::SEGMENT::STATIC;
+        } else if (segment == "temp") {
+            cmd.segment = Command::SEGMENT::TEMP;
+        } else if (segment == "pointer") {
+            cmd.segment = Command::SEGMENT::PTR;
+        }
     }
 
     // if we have one of the following commands, look for the second argumnet
@@ -107,16 +121,14 @@ Command Parser::parseLine() {
         std::string arg2 = "";
         i++;
 
-        while (current[i] != ' ') {
+        while (i < current.size() && current[i] != ' ') {
             arg2 += current[i];
             i++;
         }
-
         cmd.arg2 = arg2;
-        
     }
 
-    return Command{};
+    return cmd;
 }
 
 const std::string Parser::commandType() {

@@ -5,6 +5,7 @@
 #include <fstream>
 #include "command.h"
 
+
 class CodeWriter {
 public:
 
@@ -22,14 +23,15 @@ public:
     void writeArithmetic(Command cmd);
 
     // writes to the output file the assembly code that implements the given push or pop command
-    void writePushPop(Command cmd, std::string segment, int index);
+    void writePushPop(Command cmd);
 
     // closes output file
     void close();
 
+    std::string current = "";
+
 private:
 
-    // TODO: store the open file stream
     std::ofstream outFile;
 
 };

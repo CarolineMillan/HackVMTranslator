@@ -34,6 +34,8 @@ private:
 
     std::ofstream outFile;
 
+    int labelCounter = 0;
+
 };
 
 #endif

@@ -56,20 +56,28 @@ std::cerr << "word: [" << cmdType << "]\n";
         cmd.arith_op = Command::ARITH_OP::ADD;
     } else if (cmdType == "sub") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
+        cmd.arith_op = Command::ARITH_OP::SUB;
     } else if (cmdType == "neg") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
+        cmd.arith_op = Command::ARITH_OP::NEG;
     } else if (cmdType == "eq") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
+        cmd.arith_op = Command::ARITH_OP::EQ;
     } else if (cmdType == "gt") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
+        cmd.arith_op = Command::ARITH_OP::GT;
     } else if (cmdType == "lt") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
+        cmd.arith_op = Command::ARITH_OP::LT;
     } else if (cmdType == "and") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
+        cmd.arith_op = Command::ARITH_OP::AND;
     } else if (cmdType == "or") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
+        cmd.arith_op = Command::ARITH_OP::OR;
     } else if (cmdType == "not") {
         cmd.kind = Command::KIND::C_ARITHMETIC;
+        cmd.arith_op = Command::ARITH_OP::NOT;
     } else if (cmdType == "label") {
         cmd.kind = Command::KIND::C_LABEL;
     } else if (cmdType == "goto") {

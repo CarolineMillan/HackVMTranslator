@@ -45,9 +45,45 @@ void CodeWriter::writeArithmetic(Command cmd) {
     //
     std::string str = "// " + current + "\n";
 
+    std::string label = std::to_string(labelCounter);
+
+    // TODO:
+    // - [X] increment labelCounter for each case that uses it 
+    // - [X] build label string before the switch/case statement
+    // - [X] add in the strings for each case (they are written in your notes)
+    // - [ ] get rid of whitespace and comments in the input file before parsing it
+    // - [ ] add static temp and ptr to push/pop case
+
     switch(cmd.arith_op) {
         case Command::ARITH_OP::ADD:
-            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D+M\n";
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D+M\n"; // works
+            break;
+        case Command::ARITH_OP::SUB:
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=M-D\n"; // works
+            break;
+        case Command::ARITH_OP::NEG:
+            str += "@SP\nA=M-1\nD=-M"; // TODO: test this
+            break;
+        case Command::ARITH_OP::EQ:
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@TRUE_" + label + "\nD;JEQ\nD=0\n@END_" + label + "\n0;JMP\n(TRUE_" + label + ")\nD=-1\n@SP\nA=M-1\nM=D"; // TODO: test this
+            labelCounter++;
+            break;
+        case Command::ARITH_OP::GT:
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@TRUE_" + label + "\nD;JGT\nD=0\n@END_" + label + "\n0;JMP\n(TRUE_" + label + ")\nD=-1\n@SP\nA=M-1\nM=D"; // TODO: test this
+            labelCounter++;
+            break;
+        case Command::ARITH_OP::LT:
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@TRUE_" + label + "\nD;JLT\nD=0\n@END_" + label + "\n0;JMP\n(TRUE_" + label + ")\nD=-1\n@SP\nA=M-1\nM=D"; // TODO: test this
+            labelCounter++;
+            break;
+        case Command::ARITH_OP::AND:
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D&M\n"; // TODO: test this
+            break;
+        case Command::ARITH_OP::OR:
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D|M\n"; // TODO: test this
+            break;
+        case Command::ARITH_OP::NOT:
+            str += "@SP\nA=M-1\nD=!M"; // TODO: test this
             break;
         default:
             break;
@@ -82,11 +118,11 @@ void CodeWriter::writePushPop(Command cmd) {
         case Command::SEGMENT::THAT:
             sgmt_str = "@" + cmd.arg2 + "\nD=A\n@THAT\nD=D+M\n";
             break;
-        case Command::SEGMENT::STATIC:
+        case Command::SEGMENT::STATIC: // TODO:
             break;
-        case Command::SEGMENT::TEMP:
+        case Command::SEGMENT::TEMP: // TODO:
             break;
-        case Command::SEGMENT::PTR:
+        case Command::SEGMENT::PTR: // TODO:
             break;
         default:
             break;
@@ -108,7 +144,7 @@ void CodeWriter::writePushPop(Command cmd) {
             break;
     }
 
-    // TODO: write full_str to the file
+    // write full_str to the file
     outFile << full_str;
 
     

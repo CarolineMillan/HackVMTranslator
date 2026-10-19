@@ -19,10 +19,10 @@ struct Command {
     SEGMENT segment = SEGMENT::CONSTANT;
 
     // create an enum to use for the segment type
-    enum class ARITH_OP {ADD};
+    enum class ARITH_OP {ADD, SUB, NEG, EQ, GT, LT, AND, OR, NOT};
     
-    // set default to a constant
-    ARITH_OP arith_op = ARITH_OP::ADD;
+    // set default to EQ
+    ARITH_OP arith_op = ARITH_OP::EQ;
 
     // store arg1 if it exists
     std::string arg1 = "";

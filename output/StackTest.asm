@@ -27,9 +27,11 @@ D=0
 0;JMP
 (TRUE_0)
 D=-1
+(END_0)
 @SP
 A=M-1
-M=D// push constant 17
+M=D
+// push constant 17
 @17
 D=A
 @SP
@@ -58,9 +60,11 @@ D=0
 0;JMP
 (TRUE_1)
 D=-1
+(END_1)
 @SP
 A=M-1
-M=D// push constant 16
+M=D
+// push constant 16
 @16
 D=A
 @SP
@@ -89,9 +93,11 @@ D=0
 0;JMP
 (TRUE_2)
 D=-1
+(END_2)
 @SP
 A=M-1
-M=D// push constant 892
+M=D
+// push constant 892
 @892
 D=A
 @SP
@@ -120,9 +126,11 @@ D=0
 0;JMP
 (TRUE_3)
 D=-1
+(END_3)
 @SP
 A=M-1
-M=D// push constant 891
+M=D
+// push constant 891
 @891
 D=A
 @SP
@@ -151,9 +159,11 @@ D=0
 0;JMP
 (TRUE_4)
 D=-1
+(END_4)
 @SP
 A=M-1
-M=D// push constant 891
+M=D
+// push constant 891
 @891
 D=A
 @SP
@@ -182,9 +192,11 @@ D=0
 0;JMP
 (TRUE_5)
 D=-1
+(END_5)
 @SP
 A=M-1
-M=D// push constant 32767
+M=D
+// push constant 32767
 @32767
 D=A
 @SP
@@ -213,9 +225,11 @@ D=0
 0;JMP
 (TRUE_6)
 D=-1
+(END_6)
 @SP
 A=M-1
-M=D// push constant 32766
+M=D
+// push constant 32766
 @32766
 D=A
 @SP
@@ -244,9 +258,11 @@ D=0
 0;JMP
 (TRUE_7)
 D=-1
+(END_7)
 @SP
 A=M-1
-M=D// push constant 32766
+M=D
+// push constant 32766
 @32766
 D=A
 @SP
@@ -275,9 +291,11 @@ D=0
 0;JMP
 (TRUE_8)
 D=-1
+(END_8)
 @SP
 A=M-1
-M=D// push constant 57
+M=D
+// push constant 57
 @57
 D=A
 @SP
@@ -324,7 +342,8 @@ M=M-D
 // neg
 @SP
 A=M-1
-D=-M// and
+M=-M
+// and
 @SP
 AM=M-1
 D=M
@@ -347,4 +366,4 @@ M=D|M
 // not
 @SP
 A=M-1
-D=!M
+M=!M

@@ -56,34 +56,34 @@ void CodeWriter::writeArithmetic(Command cmd) {
 
     switch(cmd.arith_op) {
         case Command::ARITH_OP::ADD:
-            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D+M\n"; // works
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D+M\n";
             break;
         case Command::ARITH_OP::SUB:
-            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=M-D\n"; // works
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=M-D\n";
             break;
         case Command::ARITH_OP::NEG:
-            str += "@SP\nA=M-1\nD=-M"; // TODO: test this
+            str += "@SP\nA=M-1\nM=-M\n";
             break;
         case Command::ARITH_OP::EQ:
-            str += "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@TRUE_" + label + "\nD;JEQ\nD=0\n@END_" + label + "\n0;JMP\n(TRUE_" + label + ")\nD=-1\n@SP\nA=M-1\nM=D"; // TODO: test this
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@TRUE_" + label + "\nD;JEQ\nD=0\n@END_" + label + "\n0;JMP\n(TRUE_" + label + ")\nD=-1\n(END_" + label + ")\n@SP\nA=M-1\nM=D\n";
             labelCounter++;
             break;
         case Command::ARITH_OP::GT:
-            str += "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@TRUE_" + label + "\nD;JGT\nD=0\n@END_" + label + "\n0;JMP\n(TRUE_" + label + ")\nD=-1\n@SP\nA=M-1\nM=D"; // TODO: test this
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@TRUE_" + label + "\nD;JGT\nD=0\n@END_" + label + "\n0;JMP\n(TRUE_" + label + ")\nD=-1\n(END_" + label + ")\n@SP\nA=M-1\nM=D\n";
             labelCounter++;
             break;
         case Command::ARITH_OP::LT:
-            str += "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@TRUE_" + label + "\nD;JLT\nD=0\n@END_" + label + "\n0;JMP\n(TRUE_" + label + ")\nD=-1\n@SP\nA=M-1\nM=D"; // TODO: test this
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nD=M-D\n@TRUE_" + label + "\nD;JLT\nD=0\n@END_" + label + "\n0;JMP\n(TRUE_" + label + ")\nD=-1\n(END_" + label + ")\n@SP\nA=M-1\nM=D\n";
             labelCounter++;
             break;
         case Command::ARITH_OP::AND:
-            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D&M\n"; // TODO: test this
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D&M\n";
             break;
         case Command::ARITH_OP::OR:
-            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D|M\n"; // TODO: test this
+            str += "@SP\nAM=M-1\nD=M\nA=A-1\nM=D|M\n";
             break;
         case Command::ARITH_OP::NOT:
-            str += "@SP\nA=M-1\nD=!M"; // TODO: test this
+            str += "@SP\nA=M-1\nM=!M\n";
             break;
         default:
             break;
@@ -118,11 +118,22 @@ void CodeWriter::writePushPop(Command cmd) {
         case Command::SEGMENT::THAT:
             sgmt_str = "@" + cmd.arg2 + "\nD=A\n@THAT\nD=D+M\n";
             break;
-        case Command::SEGMENT::STATIC: // TODO:
+        case Command::SEGMENT::STATIC:
+            sgmt_str = "@" + std::to_string(constants::STATIC_ADDR + stoi(cmd.arg2)) + "\nD=A\n";
             break;
-        case Command::SEGMENT::TEMP: // TODO:
+        case Command::SEGMENT::TEMP:
+            sgmt_str = "@" + std::to_string(constants::TEMP_ADDR + stoi(cmd.arg2)) + "\nD=A\n";
             break;
-        case Command::SEGMENT::PTR: // TODO:
+        case Command::SEGMENT::PTR: // TODO: test
+            if (cmd.arg2 == "0") {
+                sgmt_str = "@THIS\nD=A\n";
+                //sgmt_str = "@" + cmd.arg2 + "\nD=A\n@THIS\nD=D+M\n";
+            } else if (cmd.arg2 == "1") {
+                //sgmt_str = "@" + cmd.arg2 + "\nD=A\n@THAT\nD=D+M\n";
+                sgmt_str = "@THAT\nD=A\n";
+            } else {
+                // TODO: error, ptr can only be 0 or 1
+            }
             break;
         default:
             break;

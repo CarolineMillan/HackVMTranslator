@@ -47,12 +47,6 @@ void CodeWriter::writeArithmetic(Command cmd) {
 
     std::string label = std::to_string(labelCounter);
 
-    // TODO:
-    // - [X] increment labelCounter for each case that uses it 
-    // - [X] build label string before the switch/case statement
-    // - [X] add in the strings for each case (they are written in your notes)
-    // - [ ] get rid of whitespace and comments in the input file before parsing it
-    // - [ ] add static temp and ptr to push/pop case
 
     switch(cmd.arith_op) {
         case Command::ARITH_OP::ADD:
@@ -101,7 +95,7 @@ void CodeWriter::writePushPop(Command cmd) {
     std::string sgmt_str = "";
     std::string full_str = "// " + current + "\n";
 
-    // TODO: find sgmt_str
+    // find sgmt_str
     switch(cmd.segment) {
         case Command::SEGMENT::CONSTANT:
             sgmt_str = "@" + cmd.arg2 + "\n";
@@ -124,15 +118,13 @@ void CodeWriter::writePushPop(Command cmd) {
         case Command::SEGMENT::TEMP:
             sgmt_str = "@" + std::to_string(constants::TEMP_ADDR + stoi(cmd.arg2)) + "\nD=A\n";
             break;
-        case Command::SEGMENT::PTR: // TODO: test
+        case Command::SEGMENT::PTR:
             if (cmd.arg2 == "0") {
                 sgmt_str = "@THIS\nD=A\n";
-                //sgmt_str = "@" + cmd.arg2 + "\nD=A\n@THIS\nD=D+M\n";
             } else if (cmd.arg2 == "1") {
-                //sgmt_str = "@" + cmd.arg2 + "\nD=A\n@THAT\nD=D+M\n";
                 sgmt_str = "@THAT\nD=A\n";
             } else {
-                // TODO: error, ptr can only be 0 or 1
+                // TODO: error, ptr args can only be 0 or 1
             }
             break;
         default:

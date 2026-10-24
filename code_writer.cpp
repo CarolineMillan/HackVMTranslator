@@ -29,8 +29,17 @@ void CodeWriter::writeCommand(Command cmd) {
             writePushPop(cmd);
             return;
         case Command::KIND::C_LABEL:
+            // call writeLabel and return
+            writeLabel(cmd);
+            return;
         case Command::KIND::C_GOTO:
+            // call writeGOTO and return
+            writeGoto(cmd);
+            return;
         case Command::KIND::C_IF:
+            // call writeIf and return
+            writeIf(cmd);
+            return;
         case Command::KIND::C_FUNCTION:
         case Command::KIND::C_CALL:
         case Command::KIND::C_RETURN:
@@ -153,6 +162,35 @@ void CodeWriter::writePushPop(Command cmd) {
     
 }
 
+void CodeWriter::writeLabel(Command cmd) {
+
+    std::string full_str = "// " + current + "\n";
+
+    full_str += "(" + cmd.arg1 + ")\n";
+
+    // write full_str to the file
+    outFile << full_str;
+}
+
+void CodeWriter::writeGoto(Command cmd) {
+
+    std::string full_str = "// " + current + "\n";
+
+    full_str += "@" + cmd.arg1 + "\n0;JMP\n";
+
+    // write full_str to the file
+    outFile << full_str;
+}
+
+void CodeWriter::writeIf(Command cmd) {
+
+    std::string full_str = "// " + current + "\n";
+
+    full_str += "@SP\nAM=M-1\nD=M\n@" + cmd.arg1 + "\nD;JNE\n";
+
+    // write full_str to the file
+    outFile << full_str;
+}
 void CodeWriter::close() {
     // closes output file
     // this happens automagically when the file goes out of scope

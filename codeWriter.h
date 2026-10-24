@@ -25,6 +25,15 @@ public:
     // writes to the output file the assembly code that implements the given push or pop command
     void writePushPop(Command cmd);
 
+    // writes to the output file the assembly code that implements the given Label command
+    void writeLabel(Command cmd);
+
+    // writes to the output file the assembly code that implements the given Goto command
+    void writeGoto(Command cmd);
+    //
+    // writes to the output file the assembly code that implements the given If-goto command
+    void writeIf(Command cmd);
+
     // closes output file
     void close();
 

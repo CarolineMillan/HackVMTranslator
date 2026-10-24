@@ -97,6 +97,7 @@ std::cerr << "word: [" << cmdType << "]\n";
     
     
     if (cmd.kind != Command::KIND::C_ARITHMETIC) {
+        // then look for arg1
         std::string segment = "";
         i++;
 
@@ -122,6 +123,9 @@ std::cerr << "word: [" << cmdType << "]\n";
         } else if (segment == "pointer") {
             cmd.segment = Command::SEGMENT::PTR;
         }
+
+        // TODO: should this be an else clause? keeping it here for now so that arg1 is always set. arg1 is a string for things that aren't push/pop. eg label.
+        cmd.arg1 = segment;
     }
 
     // if we have one of the following commands, look for the second argumnet

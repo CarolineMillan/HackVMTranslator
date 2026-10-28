@@ -41,8 +41,17 @@ void CodeWriter::writeCommand(Command cmd) {
             writeIf(cmd);
             return;
         case Command::KIND::C_FUNCTION:
+            // call writeFunction and return
+            writeFunction(cmd);
+            return;
         case Command::KIND::C_CALL:
+            // call writeCall and return
+            writeCall(cmd);
+            return;
         case Command::KIND::C_RETURN:
+            // call writeReturn and return
+            writeReturn(cmd);
+            return;
         default:
         return;
     }
@@ -191,6 +200,52 @@ void CodeWriter::writeIf(Command cmd) {
     // write full_str to the file
     outFile << full_str;
 }
+
+void CodeWriter::writeCall(Command cmd) {
+
+    std::string full_str = "// " + current + "\n";
+
+    std::string RTN_ADDR = "RTN";
+    //RTN_ADDR += stoi(labelCounter); // TODO: set this properly,and fix all labeling conventions
+    labelCounter++;
+
+    // now calculate n + 5
+    int n = stoi(cmd.arg2) + 5;
+
+full_str += "@" + RTN_ADDR + "\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@SP\nD=M\n@" + std::to_string(n) + "\nD=D-A\n@ARG\nM=D\n\n@" + cmd.arg1 + "\n0;JMP\n(" + RTN_ADDR + ")\n";
+
+    full_str += "@SP\nAM=M-1\nD=M\n@" + cmd.arg1 + "\nD;JNE\n";
+
+    // write full_str to the file
+    outFile << full_str;
+}
+
+void CodeWriter::writeReturn(Command cmd) {
+    // TODO:
+    std::string full_str = "// " + current + "\n";
+
+    full_str += "@LCL\nD=M\n@R13\nM=D\n@5\nD=A\n@R13\nA=M-D\nD=M\n@R14\nM=D\n@SP\nAM=M-1\nD=M\n@ARG\nA=M\nM=D\n@ARG\nD=M+1\n@SP\nM=D\n@R13\nA=M-1\nD=M\n@THAT\nM=D\n@2\nD=A\n@R13\nA=M-D\nD=M\n@THIS\nM=D\n@3\nD=A\n@R13\nA=M-D\nD=M\n@ARG\nM=D\n@4\nD=A\n@R13\nA=M-D\nD=M\n@LCL\nM=D\n@R14\nA=M\n0;JMP\n";
+
+    // write full_str to the file
+    outFile << full_str;
+}
+
+void CodeWriter::writeFunction(Command cmd) {
+
+    std::string full_str = "// " + current + "\n";
+
+    full_str += "@" + cmd.arg1 + "\n";
+
+    // loop k (cmd.arg2) times to print push 0
+    for (int i = 0; i < stoi(cmd.arg2); i++) {
+        // print 'push 0'
+        full_str += "@0\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+    }
+
+    // write full_str to the file
+    outFile << full_str;
+}
+
 void CodeWriter::close() {
     // closes output file
     // this happens automagically when the file goes out of scope

@@ -34,6 +34,15 @@ public:
     // writes to the output file the assembly code that implements the given If-goto command
     void writeIf(Command cmd);
 
+    // writes to the output file the assembly code that implements the given call command
+    void writeCall(Command cmd);
+
+    // writes to the output file the assembly code that implements the given return command
+    void writeReturn(Command cmd);
+
+    // writes to the output file the assembly code that implements the given function command
+    void writeFunction(Command cmd);
+
     // closes output file
     void close();
 

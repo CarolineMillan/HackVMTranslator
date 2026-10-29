@@ -7,7 +7,7 @@ struct Command {
 
     // create an enum to use for the command type
     // called it kind to avoid confusion
-    enum class KIND {C_ARITHMETIC, C_PUSH, C_POP, C_LABEL, C_GOTO, C_IF, C_FUNCTION, C_CALL, C_RETURN};
+    enum class KIND {C_ARITHMETIC, C_PUSH, C_POP, C_LABEL, C_GOTO, C_IF, C_FUNCTION, C_CALL, C_RETURN, C_COMMENT};
     
     // set default to a label
     KIND kind = KIND::C_LABEL;

@@ -30,8 +30,18 @@ void Parser::advance() {
 Command Parser::parseLine() {
     // turn current into a command
     //
-    // TODO: remove comments and whitespace from input text
+
     Command cmd;
+
+    if (current.size() == 0 || (current.size() == 1 && current[0] == '\n')) {
+        cmd.kind = Command::KIND::C_COMMENT;
+        return cmd;
+    }
+
+    if ((current.size() > 1) && (current[0] == '/') && (current[1] == '/')) {
+        cmd.kind = Command::KIND::C_COMMENT;
+        return cmd;
+    }
 
     // TODO: split this up into helper functions
 
@@ -39,11 +49,16 @@ Command Parser::parseLine() {
     std::string cmdType = "";
     int i = 0;
 
+    // strip leading whitespace
+    while (isspace(current[i])) {
+        i++;
+    }
+
     while (i < current.size() && current[i] != ' ') {
         cmdType += current[i];
         i++;
     }
-std::cerr << "word: [" << cmdType << "]\n";
+
 
     // now match on the cmd
     // can't use a switch statement because this is a string not an integer/enumerated value

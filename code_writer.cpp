@@ -15,8 +15,7 @@ CodeWriter::CodeWriter(std::string output) : outFile(output) {
 }
 
 void CodeWriter::writeCommand(Command cmd) {
-    std::cerr << "1\n";
-    std::cerr << "kind: " << static_cast<int>(cmd.kind) << "\n";
+    //std::cerr << "kind: " << static_cast<int>(cmd.kind) << "\n";
     // decides which method to use to write the output file
     switch (cmd.kind) {
         case Command::KIND::C_ARITHMETIC:
@@ -52,13 +51,16 @@ void CodeWriter::writeCommand(Command cmd) {
             // call writeReturn and return
             writeReturn(cmd);
             return;
+        case Command::KIND::C_COMMENT:
+            // print the comment
+            outFile << current + "\n";
+            return;
         default:
         return;
     }
 }
 
 void CodeWriter::writeArithmetic(Command cmd) {
-    std::cerr << "writing\n";
     // writes to the output file the assembly code that implements the given arithmeical-logical command
     //
     std::string str = "// " + current + "\n";
@@ -106,7 +108,6 @@ void CodeWriter::writeArithmetic(Command cmd) {
 }
 
 void CodeWriter::writePushPop(Command cmd) {
-    std::cerr << "writing\n";
     // writes to the output file the assembly code that implements the given push or pop command
 
     // address of the non-stack bit we need to look at, but not even just address, more the bit of the string that is dependent on segment not kind of command

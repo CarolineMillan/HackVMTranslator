@@ -56,6 +56,7 @@ void CodeWriter::writeCommand(Command cmd) {
             outFile << current + "\n";
             return;
         default:
+            std::cerr << "Error: unknown command" << std::endl;
         return;
     }
 }
@@ -107,6 +108,27 @@ void CodeWriter::writeArithmetic(Command cmd) {
 
 }
 
+void CodeWriter::writeInit() {
+    std::string str = "// bootstrap\n";
+
+    // SP = 256
+    str += "@256\nD=A\n@SP\nM=D\n";
+    // write str to the file
+    outFile << str;
+
+    // call Sys.init
+    Command cmd;
+
+    // currentFileName = "Sys";
+
+    cmd.kind = Command::KIND::C_CALL;
+    cmd.arg1 = "Sys.init";
+    cmd.arg2 = "0";
+
+    writeCall(cmd);
+
+}
+
 void CodeWriter::writePushPop(Command cmd) {
     // writes to the output file the assembly code that implements the given push or pop command
 
@@ -132,7 +154,8 @@ void CodeWriter::writePushPop(Command cmd) {
             sgmt_str = "@" + cmd.arg2 + "\nD=A\n@THAT\nD=D+M\n";
             break;
         case Command::SEGMENT::STATIC:
-            sgmt_str = "@" + std::to_string(constants::STATIC_ADDR + stoi(cmd.arg2)) + "\nD=A\n";
+            //sgmt_str = "@" + std::to_string(constants::STATIC_ADDR + stoi(cmd.arg2)) + "\nD=A\n";
+            sgmt_str = "@" + currentFileName + "." + cmd.arg2 + "\nD=A\n";
             break;
         case Command::SEGMENT::TEMP:
             sgmt_str = "@" + std::to_string(constants::TEMP_ADDR + stoi(cmd.arg2)) + "\nD=A\n";
@@ -176,7 +199,7 @@ void CodeWriter::writeLabel(Command cmd) {
 
     std::string full_str = "// " + current + "\n";
 
-    full_str += "(" + cmd.arg1 + ")\n";
+    full_str += "(" + currentFileName + "$" + cmd.arg1 + ")\n";
 
     // write full_str to the file
     outFile << full_str;
@@ -186,7 +209,7 @@ void CodeWriter::writeGoto(Command cmd) {
 
     std::string full_str = "// " + current + "\n";
 
-    full_str += "@" + cmd.arg1 + "\n0;JMP\n";
+    full_str += "@" + currentFileName + "$" + cmd.arg1 + "\n0;JMP\n";
 
     // write full_str to the file
     outFile << full_str;
@@ -196,7 +219,7 @@ void CodeWriter::writeIf(Command cmd) {
 
     std::string full_str = "// " + current + "\n";
 
-    full_str += "@SP\nAM=M-1\nD=M\n@" + cmd.arg1 + "\nD;JNE\n";
+    full_str += "@SP\nAM=M-1\nD=M\n@" + currentFileName + "$" + cmd.arg1 + "\nD;JNE\n";
 
     // write full_str to the file
     outFile << full_str;
@@ -206,16 +229,16 @@ void CodeWriter::writeCall(Command cmd) {
 
     std::string full_str = "// " + current + "\n";
 
-    std::string RTN_ADDR = "RTN";
-    //RTN_ADDR += stoi(labelCounter); // TODO: set this properly,and fix all labeling conventions
+    std::string RTN_ADDR = currentFileName + ".RTN" + std::to_string(labelCounter);
+    //RTN_ADDR += stoi(labelCounter); // TODO: set this properly,and fix all labeling conventions. think this is doen now
     labelCounter++;
 
     // now calculate n + 5
     int n = stoi(cmd.arg2) + 5;
 
-full_str += "@" + RTN_ADDR + "\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@SP\nD=M\n@" + std::to_string(n) + "\nD=D-A\n@ARG\nM=D\n\n@" + cmd.arg1 + "\n0;JMP\n(" + RTN_ADDR + ")\n";
+full_str += "@" + RTN_ADDR + "\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@SP\nD=M\n@" + std::to_string(n) + "\nD=D-A\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@" + cmd.arg1 + "\n0;JMP\n(" + RTN_ADDR + ")\n";
 
-    full_str += "@SP\nAM=M-1\nD=M\n@" + cmd.arg1 + "\nD;JNE\n";
+    //full_str += "@SP\nAM=M-1\nD=M\n@" + cmd.arg1 + "\nD;JNE\n";
 
     // write full_str to the file
     outFile << full_str;
@@ -235,7 +258,7 @@ void CodeWriter::writeFunction(Command cmd) {
 
     std::string full_str = "// " + current + "\n";
 
-    full_str += "@" + cmd.arg1 + "\n";
+    full_str += "(" + cmd.arg1 + ")\n";
 
     // loop k (cmd.arg2) times to print push 0
     for (int i = 0; i < stoi(cmd.arg2); i++) {

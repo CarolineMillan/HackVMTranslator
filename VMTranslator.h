@@ -20,7 +20,8 @@ public:
 private:
 
     // keep a handle on the parser and codewriter
-    Parser parser;
+    std::filesystem::path dir;
+    // Parser parser;
     CodeWriter codeWriter;
 };
 

@@ -43,10 +43,15 @@ public:
     // writes to the output file the assembly code that implements the given function command
     void writeFunction(Command cmd);
 
+    // writes to the output file the bootstrap code
+    void writeInit();
+
     // closes output file
     void close();
 
     std::string current = "";
+
+    std::string currentFileName = "";
 
 private:
 

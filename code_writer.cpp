@@ -6,7 +6,6 @@
 
 CodeWriter::CodeWriter(std::string output) : outFile(output) {
     // open an output filestream for writing
-    //outFile = std::ofstream(output);
 
     if (!outFile) {
         std::cerr << "Error: Couldn't open output file." << std::endl;
@@ -15,7 +14,6 @@ CodeWriter::CodeWriter(std::string output) : outFile(output) {
 }
 
 void CodeWriter::writeCommand(Command cmd) {
-    //std::cerr << "kind: " << static_cast<int>(cmd.kind) << "\n";
     // decides which method to use to write the output file
     switch (cmd.kind) {
         case Command::KIND::C_ARITHMETIC:
@@ -230,7 +228,6 @@ void CodeWriter::writeCall(Command cmd) {
     std::string full_str = "// " + current + "\n";
 
     std::string RTN_ADDR = currentFileName + ".RTN" + std::to_string(labelCounter);
-    //RTN_ADDR += stoi(labelCounter); // TODO: set this properly,and fix all labeling conventions. think this is doen now
     labelCounter++;
 
     // now calculate n + 5
@@ -238,14 +235,11 @@ void CodeWriter::writeCall(Command cmd) {
 
 full_str += "@" + RTN_ADDR + "\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@SP\nD=M\n@" + std::to_string(n) + "\nD=D-A\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@" + cmd.arg1 + "\n0;JMP\n(" + RTN_ADDR + ")\n";
 
-    //full_str += "@SP\nAM=M-1\nD=M\n@" + cmd.arg1 + "\nD;JNE\n";
-
     // write full_str to the file
     outFile << full_str;
 }
 
 void CodeWriter::writeReturn(Command cmd) {
-    // TODO:
     std::string full_str = "// " + current + "\n";
 
     full_str += "@LCL\nD=M\n@R13\nM=D\n@5\nD=A\n@R13\nA=M-D\nD=M\n@R14\nM=D\n@SP\nAM=M-1\nD=M\n@ARG\nA=M\nM=D\n@ARG\nD=M+1\n@SP\nM=D\n@R13\nA=M-1\nD=M\n@THAT\nM=D\n@2\nD=A\n@R13\nA=M-D\nD=M\n@THIS\nM=D\n@3\nD=A\n@R13\nA=M-D\nD=M\n@ARG\nM=D\n@4\nD=A\n@R13\nA=M-D\nD=M\n@LCL\nM=D\n@R14\nA=M\n0;JMP\n";

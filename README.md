@@ -1,6 +1,6 @@
 # HackVMTranslator
 
-A VM Translator written in C++. Takes an input file of VM code and translates it into Hack Assembly. 
+A VM Translator written in C++. Takes an input file of VM code and translates it into Hack Assembly.
 The back-end of the compiler in the course From NAND to Tetris, based on the Java Virtual Machine.
 
 Supports:
@@ -38,3 +38,13 @@ To build: ```g++ -std=c++17 *.cpp -o vmtranslator```
 To run: ```./vmtranslator [input_dir] [output_filename.asm]```
 
 For example: ``` ./vmtranslator input/StaticsTest output/StaticsTest.asm ```
+
+The resulting file can be tested using the NAND2Tetris online IDE.
+
+## Known limitations
+
+- `lt` & `gt` overflow
+- no range checks on input indices for `temp` and `static` commands
+- I have only tested this on macOS
+- the VM commands must be space separated
+- i have not ordered the directory iterator, so it is translated in an unspecified order and may differ to the file I generated and put in the `output` folder. This should not affect the usability of the output.

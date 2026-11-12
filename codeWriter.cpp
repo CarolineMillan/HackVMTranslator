@@ -3,13 +3,16 @@
 #include "constants.h"
 #include <iostream>
 #include <fstream>
+#include <exception>
+#include <stdexcept>
 
 CodeWriter::CodeWriter(std::string output) : outFile(output) {
     // open an output filestream for writing
 
     if (!outFile) {
-        std::cerr << "Error: Couldn't open output file." << std::endl;
-        return;
+        throw std::exception();
+        // std::cerr << "Error: Couldn't open output file." << std::endl;
+        //return;
     }
 }
 
@@ -121,7 +124,7 @@ void CodeWriter::writeInit() {
 
     cmd.kind = Command::KIND::C_CALL;
     cmd.arg1 = "Sys.init";
-    cmd.arg2 = "0";
+    cmd.arg2 = 0;
 
     writeCall(cmd);
 
@@ -137,34 +140,33 @@ void CodeWriter::writePushPop(Command cmd) {
     // find sgmt_str
     switch(cmd.segment) {
         case Command::SEGMENT::CONSTANT:
-            sgmt_str = "@" + cmd.arg2 + "\n";
+            sgmt_str = "@" + std::to_string(cmd.arg2) + "\n";
             break;
         case Command::SEGMENT::LCL:
-            sgmt_str = "@" + cmd.arg2 + "\nD=A\n@LCL\nD=D+M\n";
+            sgmt_str = "@" + std::to_string(cmd.arg2) + "\nD=A\n@LCL\nD=D+M\n";
             break;
         case Command::SEGMENT::ARG:
-            sgmt_str = "@" + cmd.arg2 + "\nD=A\n@ARG\nD=D+M\n";
+            sgmt_str = "@" + std::to_string(cmd.arg2) + "\nD=A\n@ARG\nD=D+M\n";
             break;
         case Command::SEGMENT::THIS:
-            sgmt_str = "@" + cmd.arg2 + "\nD=A\n@THIS\nD=D+M\n";
+            sgmt_str = "@" + std::to_string(cmd.arg2) + "\nD=A\n@THIS\nD=D+M\n";
             break;
         case Command::SEGMENT::THAT:
-            sgmt_str = "@" + cmd.arg2 + "\nD=A\n@THAT\nD=D+M\n";
+            sgmt_str = "@" + std::to_string(cmd.arg2) + "\nD=A\n@THAT\nD=D+M\n";
             break;
         case Command::SEGMENT::STATIC:
-            //sgmt_str = "@" + std::to_string(constants::STATIC_ADDR + stoi(cmd.arg2)) + "\nD=A\n";
-            sgmt_str = "@" + currentFileName + "." + cmd.arg2 + "\nD=A\n";
+            sgmt_str = "@" + currentFileName + "." + std::to_string(cmd.arg2) + "\nD=A\n";
             break;
         case Command::SEGMENT::TEMP:
-            sgmt_str = "@" + std::to_string(constants::TEMP_ADDR + stoi(cmd.arg2)) + "\nD=A\n";
+            sgmt_str = "@" + std::to_string(constants::TEMP_ADDR + cmd.arg2) + "\nD=A\n";
             break;
         case Command::SEGMENT::PTR:
-            if (cmd.arg2 == "0") {
+            if (cmd.arg2 == 0) {
                 sgmt_str = "@THIS\nD=A\n";
-            } else if (cmd.arg2 == "1") {
+            } else if (cmd.arg2 == 1) {
                 sgmt_str = "@THAT\nD=A\n";
             } else {
-                // TODO: error, ptr args can only be 0 or 1
+                throw std::invalid_argument("ptr arg must be 0 or 1");
             }
             break;
         default:
@@ -231,7 +233,7 @@ void CodeWriter::writeCall(Command cmd) {
     labelCounter++;
 
     // now calculate n + 5
-    int n = stoi(cmd.arg2) + 5;
+    int n = cmd.arg2 + 5;
 
 full_str += "@" + RTN_ADDR + "\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@SP\nD=M\n@" + std::to_string(n) + "\nD=D-A\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@" + cmd.arg1 + "\n0;JMP\n(" + RTN_ADDR + ")\n";
 
@@ -255,7 +257,7 @@ void CodeWriter::writeFunction(Command cmd) {
     full_str += "(" + cmd.arg1 + ")\n";
 
     // loop k (cmd.arg2) times to print push 0
-    for (int i = 0; i < stoi(cmd.arg2); i++) {
+    for (int i = 0; i < cmd.arg2; i++) {
         // print 'push 0'
         full_str += "@0\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
     }
@@ -264,7 +266,3 @@ void CodeWriter::writeFunction(Command cmd) {
     outFile << full_str;
 }
 
-void CodeWriter::close() {
-    // closes output file
-    // this happens automagically when the file goes out of scope
-}

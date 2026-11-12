@@ -46,9 +46,6 @@ public:
     // writes to the output file the bootstrap code
     void writeInit();
 
-    // closes output file
-    void close();
-
     std::string current = "";
 
     std::string currentFileName = "";

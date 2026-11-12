@@ -2,26 +2,21 @@
 #define VMTRANSLATOR_H
 
 #include <string>
+#include <filesystem>
 #include "parser.h"
 #include "codeWriter.h"
 
 class VMTranslator {
 public:
 
-    // default constructor and deconstructor
     VMTranslator() = default;
+    VMTranslator(std::string input, std::string output);
     ~VMTranslator() = default;
 
-    // constructor with filepaths
-    VMTranslator(std::string input, std::string output);
-
-    // run the translation
     void translate();
 private:
 
-    // keep a handle on the parser and codewriter
     std::filesystem::path dir;
-    // Parser parser;
     CodeWriter codeWriter;
 };
 

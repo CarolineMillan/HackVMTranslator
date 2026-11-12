@@ -1,35 +1,29 @@
 #include "parser.h"
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
+#include <cctype>
 
 Parser::Parser(std::string input) {
-    // constructor that opens an input file
-    //
     inFile = std::ifstream(input);
 
-    // if we can't open it for reading return an error
     if (!inFile) {
         throw std::runtime_error("couldn't open file for reading: " + input);
-        return;
     }
 }
 
 bool Parser::hasMoreLines() {
     // checks to see if there is another line
-    //
     return inFile.peek() != EOF;
 }
 
 void Parser::advance() {
     // gets the next line and sets it to the current line
-    //
-    // TODO: convince yourself that this advances iFile
     std::getline(inFile, current);
 }
 
 Command Parser::parseLine() {
     // turn current into a command
-    //
 
     Command cmd;
 
@@ -43,9 +37,6 @@ Command Parser::parseLine() {
         return cmd;
     }
 
-    // TODO: split this up into helper functions
-
-    // get cmdType
     std::string cmdType = "";
     int i = 0;
 
@@ -54,14 +45,12 @@ Command Parser::parseLine() {
         i++;
     }
 
+    /* --------------- COMMAND -------------- */
     while (i < current.size() && current[i] != ' ') {
         cmdType += current[i];
         i++;
     }
 
-
-    // now match on the cmd
-    // can't use a switch statement because this is a string not an integer/enumerated value
     if (cmdType == "push") {
         cmd.kind = Command::KIND::C_PUSH;
     } else if (cmdType == "pop") {
@@ -105,12 +94,11 @@ Command Parser::parseLine() {
         cmd.kind = Command::KIND::C_CALL;
     } else if (cmdType == "return") {
         cmd.kind = Command::KIND::C_RETURN;
+    } else {
+        throw std::invalid_argument("Error: command '" + cmdType + "' not found");
     }
 
-    // now onto arguments
-    // incrmement i beyond the whitespace
-    
-    
+    /* --------------- FIRST ARGUMENT -------------- */
     if (cmd.kind != Command::KIND::C_ARITHMETIC) {
         // then look for arg1
         std::string segment = "";
@@ -143,7 +131,7 @@ Command Parser::parseLine() {
         cmd.arg1 = segment;
     }
 
-    // if we have one of the following commands, look for the second argumnet
+    /* --------------- SECOND ARGUMENT -------------- */
     if (cmd.kind == Command::KIND::C_PUSH || cmd.kind == Command::KIND::C_POP || cmd.kind == Command::KIND::C_FUNCTION || cmd.kind == Command::KIND::C_CALL) {
         std::string arg2 = "";
         i++;
@@ -152,24 +140,14 @@ Command Parser::parseLine() {
             arg2 += current[i];
             i++;
         }
-        cmd.arg2 = arg2;
+        
+        try {
+            cmd.arg2 = stoi(arg2);
+        } catch (const std::exception& err) {
+            throw std::runtime_error("Error: converting string to integer: " + arg2 + " for line: " + current);
+        }
     }
 
     return cmd;
 }
 
-const std::string Parser::commandType() {
-    // returns command type from the line
-    return "";
-}
-
-std::string Parser::arg1() {
-    // returns first argument in the line
-    return "";
-}
-
-
-int Parser::arg2() {
-    // returns second argument in the line
-    return 0;
-}
